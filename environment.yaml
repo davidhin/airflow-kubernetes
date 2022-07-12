@@ -1,0 +1,17 @@
+name: clientops-airflow-2.3.3
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7
+  - pip
+  - pip:
+      - apache-airflow==2.3.3 --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.3.2/constraints-3.10.txt"
+      - apache-airflow-providers-ssh --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.3.2/constraints-3.10.txt"
+      - apache-airflow-providers-cncf-kubernetes --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.3.2/constraints-3.10.txt"
+      - flake8
+      - flake8-docstrings
+      - black
+      - ipykernel
+variables:
+  AIRFLOW_HOME: /Users/davidhin/Documents/clientops/airflow

@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: airflow-dags
+  labels:
+    app: airflow-dags
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 2Gi
+  hostPath:
+    path: /opt/airflow/dags
+  persistentVolumeReclaimPolicy: Delete
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: airflow-plugins
+  labels:
+    app: airflow-plugins
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 2Gi
+  hostPath:
+    path: /opt/airflow/plugins
+  persistentVolumeReclaimPolicy: Delete
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: airflow-dags
+  labels:
+    app: airflow-dags
+spec:
+  volumeName: airflow-dags
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: manual
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: airflow-plugins
+  labels:
+    app: airflow-plugins
+spec:
+  volumeName: airflow-plugins
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: manual

@@ -1,0 +1,6 @@
+.ssh
+.kube
+.env
+.DS_Store
+logs
+**/__pycache__

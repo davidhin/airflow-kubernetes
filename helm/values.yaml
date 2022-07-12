@@ -1,0 +1,17 @@
+airflowVersion: "2.3.3"
+env:
+  - name: AIRFLOW_CONN_SSH_EC2_SANDBOX
+    value: ssh://ubuntu@ec2-54-145-156-190.compute-1.amazonaws.com:22?key_file=%2Fopt%2Fairflow%2F.ssh%2Fid_rsa
+triggerer:
+  enabled: true
+flower:
+  enabled: true
+  username: flower
+  password: flower
+images:
+  airflow:
+    repository: clientops-airflow
+    tag: latest
+workers:
+  replicas: 1
+webserverSecretKeySecretName: my-webserver-secret
