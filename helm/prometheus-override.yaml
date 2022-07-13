@@ -24,3 +24,5 @@ nodeExporter:
   enabled: false
 alertmanager:
   enabled: false
+kubeStateMetrics:
+  enabled: false
