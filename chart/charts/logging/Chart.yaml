@@ -1,0 +1,6 @@
+apiVersion: v2
+name: logging
+description: A Helm chart for logging using EFK stack
+type: application
+version: 0.1.0
+appVersion: "1.16.0"

@@ -1,0 +1,9 @@
+dependencies:
+- name: kube-prometheus-stack
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 37.2.0
+- name: airflow
+  repository: https://airflow.apache.org
+  version: 1.6.0
+digest: sha256:c9aaa3def201b2cd7b08956f0706c67171ae9c85e3c97a5aae9218806c2bb44b
+generated: "2022-07-15T09:11:30.733529+09:30"

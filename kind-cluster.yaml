@@ -9,3 +9,5 @@ nodes:
         containerPath: /opt/airflow/dags
       - hostPath: ./plugins
         containerPath: /opt/airflow/plugins
+      - hostPath: ./volumes/elasticsearch
+        containerPath: /usr/share/elasticsearch/data

@@ -1,0 +1,14 @@
+apiVersion: v2
+name: Airflow Stack
+description: A Helm chart for Airflow Stack + Logging and Monitoring
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
+
+dependencies:
+  - name: kube-prometheus-stack
+    version: 37.2.0
+    repository: https://prometheus-community.github.io/helm-charts
+  - name: airflow
+    version: 1.6.0
+    repository: https://airflow.apache.org
