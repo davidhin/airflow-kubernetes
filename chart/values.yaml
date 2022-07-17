@@ -4,12 +4,8 @@ airflow:
   env:
     - name: AIRFLOW_CONN_SSH_EC2_SANDBOX
       value: ssh://ubuntu@ec2-54-145-156-190.compute-1.amazonaws.com:22?key_file=%2Fopt%2Fairflow%2F.ssh%2Fid_rsa
-    - name: AIRFLOW__WEBSERVER__EXPOSE_CONFIG
-      value: "True"
-    - name: AIRFLOW__CORE__REMOTE_LOGGING
-      value: "True"
-    - name: AIRFLOW__ELASTICSEARCH__HOST
-      value: elasticsearch.airflow.svc.cluster.local
+    - name: AIRFLOW_VAR_POD_NAMESPACE
+      value: airflow
   triggerer:
     enabled: true
   flower:
@@ -39,6 +35,16 @@ airflow:
     extraVolumeMounts:
       - mountPath: /opt/airflow/plugins
         name: plugins
+  elasticsearch:
+    enabled: true
+    connection:
+      host: elasticsearch.airflow.svc.cluster.local
+      port: 9200
+  config:
+    webserver:
+      expose_config: true
+    elasticsearch:
+      write_stdout: "True"
   statsd:
     extraMappings:
       # Airflow StatsD metrics mappings (https://airflow.apache.org/docs/apache-airflow/stable/logging-monitoring/metrics.html)

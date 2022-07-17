@@ -15,6 +15,11 @@ build: ## Install Airflow, Prometheus-Stack, and EFK using Helm.
 		$(python3 -c 'import secrets; print(secrets.token_hex(16))')"
 	helm install airflow chart -n ${NAMESPACE} --timeout 20m0s
 
+.PHONY: build-logging
+build-logging: ## Debug logging
+	kubectl create namespace ${NAMESPACE}
+	helm install airflow chart/charts/logging -n ${NAMESPACE} --timeout 20m0s
+
 .PHONY: clean
 clean: ## Delete the installed Airflow and Prometheus-Stack, but keep the Kind cluster.
 	-kubectl delete namespace ${NAMESPACE}
@@ -26,6 +31,7 @@ clean: ## Delete the installed Airflow and Prometheus-Stack, but keep the Kind c
 .PHONY: nuke
 nuke: ## Delete the entire Kind cluster.
 	kind delete cluster --name airflow-cluster
+	-rm -rf volumes
 
 .PHONY: forward-web
 forward-web: ## Forward the Airflow webserver port.
@@ -42,6 +48,10 @@ forward-grafana: ## Forward the Grafana port.
 .PHONY: forward-kibana
 forward-kibana: ## Forward the Kibana port.
 	kubectl port-forward svc/kibana 5601 -n ${NAMESPACE}
+
+.PHONY: forward-elasticsearch
+forward-elasticsearch: ## Forward the elasticsearch port.
+	kubectl port-forward svc/elasticsearch 9200 -n ${NAMESPACE}
 
 .PHONY: help
 help: ## Show this help.

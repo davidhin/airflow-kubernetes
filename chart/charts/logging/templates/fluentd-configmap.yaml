@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+  namespace: {{ .Release.Namespace }}
+data:
+  fluent.conf: |-
+    @include kubernetes.conf
+
+    <match **>
+        @type elasticsearch
+        @id out_es
+        @log_level info
+        include_tag_key true
+        host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
+        port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
+        logstash_prefix "airflow-fluentd"
+        logstash_dateformat "%Y.%m"
+        logstash_format "true"
+        type_name "fluentd"
+        include_timestamp "false"
+
+        <buffer>
+            flush_thread_count "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_FLUSH_THREAD_COUNT'] || '8'}"
+            flush_interval "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_FLUSH_INTERVAL'] || '1s'}"
+            chunk_limit_size "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_CHUNK_LIMIT_SIZE'] || '2M'}"
+            queue_limit_length "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_QUEUE_LIMIT_LENGTH'] || '32'}"
+            retry_max_interval "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_RETRY_MAX_INTERVAL'] || '30'}"
+            retry_forever true
+        </buffer>
+    </match>
+  kubernetes.conf: |-
+    <source>
+        @type tail
+        @id in_tail_container_logs
+        path "#{ENV['FLUENT_CONTAINER_TAIL_PATH'] || '/var/log/containers/*.log'}"
+        pos_file /var/log/fluentd-containers.log.pos
+        tag "#{ENV['FLUENT_CONTAINER_TAIL_TAG'] || 'kubernetes.*'}"
+        exclude_path "#{ENV['FLUENT_CONTAINER_TAIL_EXCLUDE_PATH'] || use_default}"
+        read_from_head true
+        <parse>
+            @type /^(?<time>.+) (?<stream>stdout|stderr)( (?<logtag>.))? (?<log>.*)$/
+            time_format "%Y-%m-%dT%H:%M:%S.%NZ"
+        </parse>
+    </source>
+
+    <filter kubernetes.**>
+      @type parser
+      format json
+      key_name log
+      replace_invalid_sequence true
+      emit_invalid_record_to_error false
+      reserve_data false
+      <parse>
+        @type json
+      </parse>
+    </filter>
+
+    <filter kubernetes.**>
+        @type kubernetes_metadata
+        @id filter_kube_metadata
+        kubernetes_url "#{ENV['FLUENT_FILTER_KUBERNETES_URL'] || 'https://' + ENV.fetch('KUBERNETES_SERVICE_HOST') + ':' + ENV.fetch('KUBERNETES_SERVICE_PORT') + '/api'}"
+        verify_ssl "#{ENV['KUBERNETES_VERIFY_SSL'] || true}"
+        ca_file "#{ENV['KUBERNETES_CA_FILE']}"
+        skip_labels "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_LABELS'] || 'false'}"
+        skip_container_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_CONTAINER_METADATA'] || 'false'}"
+        skip_master_url "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_MASTER_URL'] || 'false'}"
+        skip_namespace_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_NAMESPACE_METADATA'] || 'false'}"
+        watch "#{ENV['FLUENT_KUBERNETES_WATCH'] || 'true'}"
+    </filter>
